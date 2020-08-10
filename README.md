@@ -1,0 +1,2 @@
+# taberungo-wiki-updater
+たべるんごのうたwikiに載せる動画情報を取得するscriptんご
