@@ -2,6 +2,9 @@ import requests
 import datetime
 import os
 from pyquery import PyQuery as pq
+import argparse
+import datetime
+import json
 
 
 def getUserNameFromId(userId):
@@ -71,19 +74,35 @@ def getVideoList(start: datetime.datetime, end: datetime.datetime):
               f'\n\tvideo URL = {item["videoUrl"]}'
               f'\n\tposted on {item["postTime"]}')
 
-    print('Writing to the text file...')
+    # JSON dataに変換
+    print('Converting to json data...')
+    json_data = {'pages': [{'title': item['title'], 'lines':[
+        item['title'], f'[{item["thumbnailUrl"]}#.png {item["videoUrl"]}]', '', f'投稿者: [{item["userName"]}]', f'投稿日: [{item["postTime"]}]']} for item in temp]}
+
     # fileに書き込む
+    print('Writing to the json file...')
     os.makedirs('dist', exist_ok=True)
-    with open('dist/taberungo-list.txt', encoding='utf-8', mode='w') as file:
-        for item in temp:
-            file.writelines([item["title"],
-                             f'\n[{item["videoUrl"]} {item["thumbnailUrl"]}#.png]',
-                             '\n',
-                             f'\n 投稿者: [{item["userName"]}]',
-                             f'\n投稿日: [{item["postTime"]}]\n'])
+    with open('dist/taberungo-list.json', encoding='utf-8', mode='w') as file:
+        json.dump(json_data, file, indent=4, ensure_ascii=False)
+
     print('Successfully finished!')
 
 
 if __name__ == "__main__":
-    getVideoList(datetime.datetime.fromisoformat(
-        '2020-07-27T00:00:00+09:00'), datetime.datetime.now())
+    # Command line argumentsの設定
+    parser = argparse.ArgumentParser(
+            description="指定した期間内のたべるんご動画を取得し、scrapbox用jsonデータを作成するcommandんご。")
+
+    def converter(x): return datetime.datetime.fromisoformat(x)
+    parser.add_argument(
+            'From', help='fromの日時以降に投稿されたたべるんご動画を取得する。ISO8601形式', type=converter)
+    parser.add_argument(
+            'To', help='toの日時までに投稿されたたべるんご動画を取得する。ISO8601形式', type=converter)
+
+    # argumentsを解析する
+    args = parser.parse_args()
+    from_time = args.From
+    to_time = args.To
+
+    # main loop
+    getVideoList(from_time, to_time)
