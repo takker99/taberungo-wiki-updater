@@ -80,7 +80,7 @@ def getVideoList(start: datetime.datetime, end: datetime.datetime):
         item['title'], f'[{item["thumbnailUrl"]}#.png {item["videoUrl"]}]', '', f'投稿者: [{item["userName"]}]', f'投稿日: [{item["postTime"]}]']} for item in temp]}
 
     # fileに書き込む
-    print('Writing to the text file...')
+    print('Writing to the json file...')
     os.makedirs('dist', exist_ok=True)
     with open('dist/taberungo-list.json', encoding='utf-8', mode='w') as file:
         json.dump(json_data, file, indent=4, ensure_ascii=False)
