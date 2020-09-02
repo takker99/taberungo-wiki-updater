@@ -77,12 +77,12 @@ def getVideoList(start: datetime.datetime, end: datetime.datetime):
     # JSON dataに変換
     print('Converting to json data...')
     json_data = {'pages': [{'title': item['title'], 'lines':[
-        item['title'], f'[{item["thumbnailUrl"]} {item["videoUrl"]}]', '', f'投稿者: [{item["userName"]}]', f'投稿日: [{item["postTime"]}]']} for item in temp]}
+        item['title'], f'[{item["thumbnailUrl"]}#.png {item["videoUrl"]}]', '', f'投稿者: [{item["userName"]}]', f'投稿日: [{item["postTime"]}]']} for item in temp]}
 
     # fileに書き込む
     print('Writing to the text file...')
     os.makedirs('dist', exist_ok=True)
-    with open('dist/taberungo-list.txt', encoding='utf-8', mode='w') as file:
+    with open('dist/taberungo-list.json', encoding='utf-8', mode='w') as file:
         json.dump(json_data, file, indent=4, ensure_ascii=False)
 
     print('Successfully finished!')
@@ -91,13 +91,13 @@ def getVideoList(start: datetime.datetime, end: datetime.datetime):
 if __name__ == "__main__":
     # Command line argumentsの設定
     parser = argparse.ArgumentParser(
-        description="指定した期間内のたべるんご動画を取得し、scrapbox用jsonデータを作成するcommandんご。")
+            description="指定した期間内のたべるんご動画を取得し、scrapbox用jsonデータを作成するcommandんご。")
 
     def converter(x): return datetime.datetime.fromisoformat(x)
     parser.add_argument(
-        'From', help='fromの日時以降に投稿されたたべるんご動画を取得する。ISO8601形式', type=converter)
+            'From', help='fromの日時以降に投稿されたたべるんご動画を取得する。ISO8601形式', type=converter)
     parser.add_argument(
-        'To', help='toの日時までに投稿されたたべるんご動画を取得する。ISO8601形式', type=converter)
+            'To', help='toの日時までに投稿されたたべるんご動画を取得する。ISO8601形式', type=converter)
 
     # argumentsを解析する
     args = parser.parse_args()
