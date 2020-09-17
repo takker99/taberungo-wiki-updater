@@ -18,6 +18,14 @@ def getUserNameFromId(userId):
 def getVideoURL(id: str):
     return f'https://www.nicovideo.jp/watch/{id}'
 
+def getThumbnailURL(id: str):
+    url = f'https://www.nicovideo.jp/watch/{id}'
+    dom = pq(url)
+    result = dom('head').find(
+            'meta[name="twitter:image"]').attr['content']
+    print(f'The thumbnailURL of {id}: {result}')
+    return result;
+
 
 def getVideoInfo(response_data):
     '''
@@ -25,7 +33,7 @@ def getVideoInfo(response_data):
     '''
     return {'userName': getUserNameFromId(response_data['userId']),
             'title': response_data['title'],
-            'thumbnailUrl': f'{response_data["thumbnailUrl"]}.L',
+            'thumbnailUrl': getThumbnailURL(response_data['contentId']),
             'videoUrl': getVideoURL(response_data['contentId']),
             'postTime': datetime.datetime.
             fromisoformat(response_data['startTime']).strftime('%Y-%m-%d')}
