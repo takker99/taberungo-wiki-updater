@@ -18,13 +18,14 @@ def getUserNameFromId(userId):
 def getVideoURL(id: str):
     return f'https://www.nicovideo.jp/watch/{id}'
 
+
 def getThumbnailURL(id: str):
     url = f'https://www.nicovideo.jp/watch/{id}'
     dom = pq(url)
     result = dom('head').find(
-            'meta[name="twitter:image"]').attr['content']
+        'meta[name="twitter:image"]').attr['content']
     print(f'The thumbnailURL of {id}: {result}')
-    return result;
+    return result
 
 
 def getVideoInfo(response_data):
@@ -54,7 +55,7 @@ def getVideoList(start: datetime.datetime, end: datetime.datetime):
     options = {
         'q': 'たべるんごのうた',
         'targets': 'tagsExact',
-        'fields': 'userId,title,contentId,startTime,thumbnailUrl',
+        'fields': 'userId,title,contentId,startTime',
         '_sort': '-startTime',
         '_context': 'taberungo-wiki-updater',
     }
@@ -66,9 +67,10 @@ def getVideoList(start: datetime.datetime, end: datetime.datetime):
                       '_offset': j*100}
         print(f'getting data: [{j*100}, {j*100+99}[')
         response = requests.get(
-            'https://api.search.nicovideo.jp/api/v2/video/contents/search',
+            'https://api.search.nicovideo.jp/api/v2/snapshot/video/contents/search',
             params={**options, **data_range})
         # 全て取得し終えたら終了する
+        print(response.url)
         if (response.json()['data'] == []):
             break
         print('Adding data to List...')
@@ -99,13 +101,13 @@ def getVideoList(start: datetime.datetime, end: datetime.datetime):
 if __name__ == "__main__":
     # Command line argumentsの設定
     parser = argparse.ArgumentParser(
-            description="指定した期間内のたべるんご動画を取得し、scrapbox用jsonデータを作成するcommandんご。")
+        description="指定した期間内のたべるんご動画を取得し、scrapbox用jsonデータを作成するcommandんご。")
 
     def converter(x): return datetime.datetime.fromisoformat(x)
     parser.add_argument(
-            'From', help='fromの日時以降に投稿されたたべるんご動画を取得する。ISO8601形式', type=converter)
+        'From', help='fromの日時以降に投稿されたたべるんご動画を取得する。ISO8601形式', type=converter)
     parser.add_argument(
-            'To', help='toの日時までに投稿されたたべるんご動画を取得する。ISO8601形式', type=converter)
+        'To', help='toの日時までに投稿されたたべるんご動画を取得する。ISO8601形式', type=converter)
 
     # argumentsを解析する
     args = parser.parse_args()
